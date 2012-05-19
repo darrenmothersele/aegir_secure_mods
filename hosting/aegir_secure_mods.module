@@ -1,0 +1,37 @@
+<?php
+
+function aegir_secure_mods_form_alter(&$form, $form_state, $form_id) {
+	if ($form_id == 'site_node_form') {
+		$form['aegir_secure_mods_block_install_files'] = array(
+			'#type' => 'checkbox',
+			'#title' => t('Block install files'),
+			'#description' => t('Block access (via .htaccess rules) to files left over from the Drupal installation process. If you enable this options all files like CHANGELOG.txt, update.php, etc will redirect to 404 errors.'),
+			'#default_value' => $form['#node']->aegir_secure_mods_block_install_files ? $form['#node']->aegir_secure_mods_block_install_files : FALSE,
+		);
+		return $form;
+	}
+}
+
+function aegir_secure_mods_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+	if ($node->type == 'site') {
+		switch($op) {
+			case 'insert':
+		  case 'update':
+			  variable_set("aegir_secure_mods_block_install_files{$node->nid}", $node->aegir_secure_mods_block_install_files);
+				break;
+			case 'delete': 
+				variable_del("aegir_secure_mods_block_install_files{$node->nid}");
+				break;
+			case 'delete revision':
+			  variable_del("aegir_secure_mods_block_install_files{$node->nid}");
+				break;
+			case 'validate':
+			  break;
+			case 'load':
+			  $value = variable_get("aegir_secure_mods_block_install_files{$node->nid}", FALSE);
+			  return array('aegir_secure_mods_block_install_files' => $value);
+				break;
+		}
+	} 
+}
+

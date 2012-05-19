@@ -1,0 +1,6 @@
+name = Aegir Secure Mods
+description = A few modifications to harden up Aegir security.
+package = Hosting
+dependencies[] = hosting_site
+core = 6.x
+
